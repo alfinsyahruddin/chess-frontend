@@ -1,13 +1,13 @@
 <script lang="ts">
-	import * as wasm from 'chess-core';
 	import imgBoard from '$lib/images/board.svg';
 	import wq from '$lib/images/pieces/wq.png';
 	import { onMount } from 'svelte';
 	import { chunkArray } from '$lib/helpers/array-helper';
+	import { Board, type Piece } from 'chess-core';
 
-	let board: wasm.Board = $state(wasm.Board.new());
+	let board: Board = $state(Board.new());
 	let pieces = $derived(chunkArray(board.pieces, 8));
-	let selected: wasm.Piece | null = $state(null);
+	let selected: Piece | null = $state(null);
 
 	onMount(() => {
 		console.log({ pieces });
