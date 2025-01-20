@@ -3,8 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Chess" />
+	<title>Home | Chess Game</title>
+	<meta name="description" content="Chess Game" />
 </svelte:head>
 
 <div class="container">
@@ -15,8 +15,8 @@
 		<h1>Chess</h1>
 		<p>Open Source Chess Game<br />built with Rust & Svelte.</p>
 		<div class="container-buttons">
-			<button class="btn play-online">Play Online</button>
-			<button class="btn play-computer">Play Computer</button>
+			<a href="/play" class="btn play-online">Play Online</a>
+			<a href="/play" class="btn play-computer">Play Computer</a>
 		</div>
 	</div>
 </div>
@@ -67,6 +67,8 @@
 		font-weight: 700;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 		color: white;
+		text-align: center;
+		text-decoration: none;
 	}
 
 	.play-online {

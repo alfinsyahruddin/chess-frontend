@@ -1,10 +1,11 @@
 :root {
-	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Arial, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Arial, Ubuntu,
+		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
-	--color-bg-1: #3D3D3D;
-	--color-bg-2: #2A2A2A;
-	--color-theme-1: #8E5E3C;
-	--color-theme-2: #47A168;
+	--color-bg-1: #3d3d3d;
+	--color-bg-2: #2a2a2a;
+	--color-theme-1: #8e5e3c;
+	--color-theme-2: #47a168;
 	--color-text: white;
 
 	font-family: var(--font-body);
