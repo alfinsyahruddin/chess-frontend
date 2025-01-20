@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { Board } from '$lib/entities/board';
-	import { PieceType, type Piece } from '$lib/entities/piece';
+	import * as wasm from 'chess-core';
 	import imgBoard from '$lib/images/board.svg';
 	import wq from '$lib/images/pieces/wq.png';
 	import { onMount } from 'svelte';
+	import { chunkArray } from '$lib/helpers/array-helper';
 
-	let pieces: Piece[][] = $state(Board.new());
-	let selected: Piece | null = $state(null);
+	let board: wasm.Board = $state(wasm.Board.new());
+	let pieces = $derived(chunkArray(board.pieces, 8));
+	let selected: wasm.Piece | null = $state(null);
 
 	onMount(() => {
 		console.log({ pieces });
@@ -35,7 +36,7 @@
 								selected = piece;
 							}}
 						>
-							{#if piece.type != PieceType.None}
+							{#if piece.type != 'None'}
 								<img src={wq} alt="Piece" class="piece-img" />
 							{/if}
 						</button>
