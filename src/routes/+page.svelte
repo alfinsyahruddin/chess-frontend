@@ -80,7 +80,7 @@
 	}
 
 	.image img {
-		max-width: 100%;
+		width: 475px;
 		height: auto;
 	}
 
@@ -88,6 +88,10 @@
 	@media (max-width: 768px) {
 		.container {
 			flex-direction: column-reverse;
+		}
+
+		.image img {
+			width: 100%;
 		}
 	}
 </style>

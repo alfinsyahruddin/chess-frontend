@@ -1,12 +1,25 @@
 <script lang="ts">
 	import imgBoard from '$lib/images/board.svg';
-	import wq from '$lib/images/pieces/wq.png';
 	import { chunkArray } from '$lib/helpers/array-helper';
-	import { Board, type Piece } from 'chess-core';
+	import { Board, Position, type Piece } from 'chess-core';
+	import { getPieceImage } from '$lib/helpers/image-helper';
 
-	let board: Board = $state(Board.new());
+	let board: Board = $state(new Board());
 	let pieces = $derived(chunkArray(board.pieces, 8));
-	let selected: Piece | null = $state(null);
+	let selectedPosition: Position | null = $state(null);
+
+	function handleClickPiece(piece: Piece, row: number, col: number) {
+		if (piece.type == 'None') {
+			return;
+		}
+
+		selectedPosition = new Position(row, col);
+
+		console.log({
+			position: new Position(row, col).to_json(),
+			legal_moves: board.get_legal_moves(new Position(row, col))
+		});
+	}
 </script>
 
 <svelte:head>
@@ -18,21 +31,16 @@
 		<img src={imgBoard} alt="Chess" class="board" />
 
 		<div class="board">
-			{#each pieces as row}
-				{#each row as piece}
+			{#each pieces as pieces_row, row}
+				{#each pieces_row as piece, col}
+					{@const position = new Position(row, col)}
 					<div
 						class="piece"
-						class:piece-selected={JSON.stringify(selected) == JSON.stringify(piece)}
+						class:piece-selected={selectedPosition?.to_json() == position.to_json()}
 					>
-						<button
-							class="button"
-							onclick={() => {
-								console.log({ selected: JSON.stringify(selected), piece: JSON.stringify(piece) });
-								selected = piece;
-							}}
-						>
+						<button class="button" onclick={() => handleClickPiece(piece, row, col)}>
 							{#if piece.type != 'None'}
-								<img src={wq} alt="Piece" class="piece-img" />
+								<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
 							{/if}
 						</button>
 					</div>
