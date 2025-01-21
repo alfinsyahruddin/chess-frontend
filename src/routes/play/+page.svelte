@@ -1,17 +1,12 @@
 <script lang="ts">
 	import imgBoard from '$lib/images/board.svg';
 	import wq from '$lib/images/pieces/wq.png';
-	import { onMount } from 'svelte';
 	import { chunkArray } from '$lib/helpers/array-helper';
 	import { Board, type Piece } from 'chess-core';
 
 	let board: Board = $state(Board.new());
 	let pieces = $derived(chunkArray(board.pieces, 8));
 	let selected: Piece | null = $state(null);
-
-	onMount(() => {
-		console.log({ pieces });
-	});
 </script>
 
 <svelte:head>
