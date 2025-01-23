@@ -5,8 +5,12 @@
 	import { getPieceImage } from '$lib/helpers/image-helper';
 
 	let board: Board = $state(new Board());
-	let pieces = $derived(chunkArray(board.pieces, 8));
 	let selectedPosition: Position | null = $state(null);
+
+	let pieces = $derived(chunkArray(board.pieces, 8));
+	let legalMoves = $derived(
+		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
+	);
 
 	function handleClickPiece(piece: Piece, row: number, col: number) {
 		if (piece.type == 'None') {
@@ -14,11 +18,23 @@
 		}
 
 		selectedPosition = new Position(row, col);
+	}
 
-		console.log({
-			position: new Position(row, col).to_json(),
-			legal_moves: board.get_legal_moves(new Position(row, col))
-		});
+	function isLegalMove(position: Position): boolean {
+		let result = false;
+
+		let pos = position.to_str();
+		for (const move of legalMoves) {
+			if (move.to_str() == pos) {
+				return true;
+			}
+		}
+
+		return result;
+	}
+
+	function isSelectedPosition(position: Position): boolean {
+		return position.to_str() == selectedPosition?.to_str();
 	}
 </script>
 
@@ -33,16 +49,16 @@
 		<div class="board">
 			{#each pieces as pieces_row, row}
 				{#each pieces_row as piece, col}
-					{@const position = new Position(row, col)}
-					<div
-						class="piece"
-						class:piece-selected={selectedPosition?.to_json() == position.to_json()}
-					>
+					<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
 						<button class="button" onclick={() => handleClickPiece(piece, row, col)}>
 							{#if piece.type != 'None'}
 								<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
 							{/if}
 						</button>
+
+						{#if isLegalMove(new Position(row, col))}
+							<span class="dot"></span>
+						{/if}
 					</div>
 				{/each}
 			{/each}
@@ -70,6 +86,7 @@
 		height: 12.5%;
 		display: inline-block;
 		box-sizing: border-box;
+		position: relative;
 	}
 
 	.piece-img {
@@ -96,5 +113,26 @@
 		outline: inherit;
 		width: 100%;
 		height: 100%;
+		position: absolute;
+	}
+
+	.dot {
+		height: 20px;
+		width: 20px;
+		background-color: rgba(0, 0, 0, 0.25);
+		border-radius: 50%;
+		display: inline-block;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.board {
+			width: 100vw;
+			height: 100vw;
+		}
 	}
 </style>
