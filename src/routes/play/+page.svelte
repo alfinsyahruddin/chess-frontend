@@ -44,7 +44,7 @@
 	<title>Play | Chess Game</title>
 </svelte:head>
 
-<div class="page-container">
+<div class="container">
 	<Notification text="YOU WIN - OPPONENT RESIGNED!" type="success" />
 
 	<!-- <div class="waiting-container">
@@ -55,58 +55,56 @@
 		<Button text="Abort" />
 	</div> -->
 
-	<div class="board-container">
-		<img src={imgBoard} alt="Chess" class="board" />
+	<div>
+		<h3>Opponent:</h3>
+		<div class="board-container">
+			<img src={imgBoard} alt="Chess" class="board" />
 
-		<div class="board">
-			{#each pieces as pieces_row, row}
-				{#each pieces_row as piece, col}
-					<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
-						<button class="button" onclick={() => handleClickPiece(piece, row, col)}>
-							{#if piece.type != 'None'}
-								<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
+			<div class="board">
+				{#each pieces as pieces_row, row}
+					{#each pieces_row as piece, col}
+						<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
+							<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
+								{#if piece.type != 'None'}
+									<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
+								{/if}
+							</button>
+
+							{#if isLegalMove(new Position(row, col))}
+								<span class="dot"></span>
 							{/if}
-						</button>
-
-						{#if isLegalMove(new Position(row, col))}
-							<span class="dot"></span>
-						{/if}
-					</div>
+						</div>
+					{/each}
 				{/each}
-			{/each}
+			</div>
+		</div>
+		<h3>You:</h3>
+	</div>
+
+	<div class="action-container">
+		<h4>Accept Draw?</h4>
+
+		<div class="action-buttons">
+			<Button text="Yes" color="primary" />
+			<Button text="No" color="neutral" />
 		</div>
 	</div>
 </div>
 
 <style>
-	.page-container {
+	.container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		height: 100vh; /* Parent must have a height set */
-	}
-
-	.waiting-container {
-		text-align: center;
-	}
-
-	.waiting-container h3 {
-		font-size: 32px;
-		margin: 0;
-	}
-
-	.waiting-container p {
-		font-size: 24px;
-		font-weight: 100;
+		height: 100vh;
 	}
 
 	.board-container {
-		height: 100vh;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		background: red;
+		position: relative;
+		height: 60vh;
+		width: 60vh;
 	}
-
 	.board {
 		position: absolute;
 		height: 60vh;
@@ -136,7 +134,7 @@
 		background-color: rgba(255, 255, 0, 0.35);
 	}
 
-	button {
+	.piece-button {
 		background: none;
 		color: inherit;
 		border: none;
@@ -161,8 +159,45 @@
 		transform: translate(-50%, -50%);
 	}
 
+	.waiting-container {
+		text-align: center;
+	}
+
+	.waiting-container h3 {
+		font-size: 32px;
+		margin: 0;
+	}
+
+	.waiting-container p {
+		font-size: 24px;
+		font-weight: 100;
+	}
+
+	.action-container {
+		position: absolute;
+		bottom: 24px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.action-container h4 {
+		margin: 0;
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: 12px;
+	}
+
 	/* Mobile */
 	@media (max-width: 768px) {
+		.board-container {
+			width: 100vw;
+			height: 100vw;
+		}
+
 		.board {
 			width: 100vw;
 			height: 100vw;

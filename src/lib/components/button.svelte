@@ -3,7 +3,7 @@
 		text,
 		color = 'primary',
 		onclick = () => {}
-	}: { text: string; color?: 'primary' | 'secondary'; onclick?: () => void } = $props();
+	}: { text: string; color?: 'primary' | 'secondary' | 'neutral'; onclick?: () => void } = $props();
 </script>
 
 <button class="btn {color}" {onclick}>{text}</button>
@@ -28,5 +28,9 @@
 
 	.secondary {
 		background-color: var(--color-secondary);
+	}
+
+	.neutral {
+		background-color: var(--color-neutral);
 	}
 </style>
