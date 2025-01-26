@@ -4,9 +4,12 @@
 	--font-mono: 'Fira Mono', monospace;
 	--color-bg-1: #3d3d3d;
 	--color-bg-2: #2a2a2a;
-	--color-theme-1: #8e5e3c;
-	--color-theme-2: #47a168;
+	--color-primary: #8e5e3c;
+	--color-secondary: #47a168;
 	--color-text: white;
+	--color-error: #d54747;
+	--color-success: #1dbe58;
+	--color-neutral: #515151;
 
 	font-family: var(--font-body);
 	color: var(--color-text);

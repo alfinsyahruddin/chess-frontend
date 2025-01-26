@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/button.svelte';
 	import chess from '$lib/images/chess.webp';
 </script>
 
@@ -15,8 +16,12 @@
 		<h1>Chess</h1>
 		<p>Open Source Chess Game<br />built with Rust & Svelte.</p>
 		<div class="container-buttons">
-			<a href="/play" class="btn play-online">Play Online</a>
-			<a href="/play" class="btn play-computer">Play Computer</a>
+			<Button text="Play Online" color="primary" onclick={() => (window.location.href = '/play')} />
+			<Button
+				text="Play Computer"
+				color="secondary"
+				onclick={() => (window.location.href = '/play')}
+			/>
 		</div>
 	</div>
 </div>
@@ -56,27 +61,6 @@
 		flex-direction: column;
 		max-width: 200px;
 		gap: 12px;
-	}
-
-	.btn {
-		padding: 12px 28px;
-		border: none;
-		border-radius: 10px;
-		cursor: pointer;
-		font-size: 16px;
-		font-weight: 700;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-		color: white;
-		text-align: center;
-		text-decoration: none;
-	}
-
-	.play-online {
-		background-color: #8e5e3c;
-	}
-
-	.play-computer {
-		background-color: #47a168;
 	}
 
 	.image img {

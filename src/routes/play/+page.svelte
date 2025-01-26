@@ -3,6 +3,8 @@
 	import { chunkArray } from '$lib/helpers/array-helper';
 	import { Board, Position, type Piece } from 'chess-core';
 	import { getPieceImage } from '$lib/helpers/image-helper';
+	import Notification from '$lib/components/notification.svelte';
+	import Button from '$lib/components/button.svelte';
 
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
@@ -43,6 +45,16 @@
 </svelte:head>
 
 <div class="page-container">
+	<Notification text="YOU WIN - OPPONENT RESIGNED!" type="success" />
+
+	<!-- <div class="waiting-container">
+		<h3>Play Online</h3>
+
+		<p>Waiting for opponent,<br />please wait..</p>
+
+		<Button text="Abort" />
+	</div> -->
+
 	<div class="board-container">
 		<img src={imgBoard} alt="Chess" class="board" />
 
@@ -67,6 +79,27 @@
 </div>
 
 <style>
+	.page-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh; /* Parent must have a height set */
+	}
+
+	.waiting-container {
+		text-align: center;
+	}
+
+	.waiting-container h3 {
+		font-size: 32px;
+		margin: 0;
+	}
+
+	.waiting-container p {
+		font-size: 24px;
+		font-weight: 100;
+	}
+
 	.board-container {
 		height: 100vh;
 		display: flex;
