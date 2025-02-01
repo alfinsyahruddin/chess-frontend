@@ -83,12 +83,12 @@
 		<Button text="Abort" />
 	</div> -->
 
-	<div>
+	<div class="board-layout">
 		<h3>Opponent: <CapturedPieces pieces={capturedPiecesOpponent} /></h3>
 		<div class="board-container">
 			<img src={imgBoard} alt="Chess" class="board" />
 
-			<div class="board">
+			<div class="board-pieces">
 				{#each pieces as pieces_row, row}
 					{#each pieces_row as piece, col}
 						<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
@@ -226,6 +226,10 @@
 
 	/* Mobile */
 	@media (max-width: 768px) {
+		.board-layout h3 {
+			padding: 0px 16px;
+		}
+
 		.board-container {
 			width: 100vw;
 			height: 100vw;
