@@ -8,6 +8,8 @@
 	import Promotion from '$lib/components/promotion.svelte';
 	import CapturedPieces from '$lib/components/captured-pieces.svelte';
 	import { getLetterCoordinate, getNumberCoordinate } from '$lib/helpers/board-helper';
+	import { PUBLIC_WS_BASE_URL } from '$env/static/public';
+	import { onMount } from 'svelte';
 
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
@@ -38,6 +40,34 @@
 		{ type: 'Queen', color: 'White' },
 		{ type: 'Bishop', color: 'White' }
 	];
+
+	let ws: WebSocket;
+
+	// onMount(() => {
+	setupWebSocket();
+	// });
+
+	function setupWebSocket() {
+		console.log('START WS');
+
+		// Connect to the WebSocket server
+		ws = new WebSocket(PUBLIC_WS_BASE_URL);
+
+		// Handle incoming messages
+		ws.onmessage = (event: MessageEvent) => {
+			console.log(event);
+		};
+
+		// Handle errors
+		ws.onerror = (error: Event) => {
+			console.error('WebSocket error:', error);
+		};
+
+		// Handle connection closure
+		ws.onclose = () => {
+			console.log('WebSocket connection closed');
+		};
+	}
 
 	function handleClickPiece(piece: Piece, row: number, col: number) {
 		if (piece.type == 'None') {
@@ -135,6 +165,18 @@
 		<!-- <h4>Choose Piece:</h4> -->
 
 		<!-- <Promotion color="White" {onSelectPiece} /> -->
+
+		<Button
+			text="PLAY"
+			color="primary"
+			onclick={() => {
+				ws.send(
+					JSON.stringify({
+						action: 'REQUEST_PLAY'
+					})
+				);
+			}}
+		/>
 	</div>
 </div>
 
@@ -147,7 +189,6 @@
 	}
 
 	.board-container {
-		background: red;
 		position: relative;
 		height: 54vh;
 		width: 54vh;
