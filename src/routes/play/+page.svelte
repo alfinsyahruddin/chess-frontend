@@ -8,8 +8,7 @@
 	import Promotion from '$lib/components/promotion.svelte';
 	import CapturedPieces from '$lib/components/captured-pieces.svelte';
 	import { getLetterCoordinate, getNumberCoordinate } from '$lib/helpers/board-helper';
-	import { PUBLIC_WS_BASE_URL } from '$env/static/public';
-	import { onMount } from 'svelte';
+	import { PUBLIC_WS_URL } from '$env/static/public';
 
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
@@ -43,15 +42,13 @@
 
 	let ws: WebSocket;
 
-	// onMount(() => {
 	setupWebSocket();
-	// });
 
 	function setupWebSocket() {
 		console.log('START WS');
 
 		// Connect to the WebSocket server
-		ws = new WebSocket(PUBLIC_WS_BASE_URL);
+		ws = new WebSocket(PUBLIC_WS_URL);
 
 		// Handle incoming messages
 		ws.onmessage = (event: MessageEvent) => {
