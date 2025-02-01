@@ -2,11 +2,27 @@
 	let {
 		text,
 		color = 'primary',
+		isDisabled = false,
 		onclick = () => {}
-	}: { text: string; color?: 'primary' | 'secondary' | 'neutral'; onclick?: () => void } = $props();
+	}: {
+		text: string;
+		color?: 'primary' | 'secondary' | 'neutral';
+		isDisabled?: boolean;
+		onclick?: () => void;
+	} = $props();
 </script>
 
-<button class="btn {color}" {onclick}>{text}</button>
+<button
+	class="btn {color}"
+	class:disabled={isDisabled}
+	onclick={() => {
+		if (!isDisabled) {
+			return;
+		}
+
+		onclick();
+	}}>{text}</button
+>
 
 <style>
 	.btn {
@@ -20,6 +36,11 @@
 		color: var(--color-text);
 		text-align: center;
 		text-decoration: none;
+	}
+
+	.disabled {
+		pointer-events: none;
+		opacity: 0.5;
 	}
 
 	.primary {

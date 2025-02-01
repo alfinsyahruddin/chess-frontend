@@ -5,6 +5,8 @@
 	import { getPieceImage } from '$lib/helpers/image-helper';
 	import Notification from '$lib/components/notification.svelte';
 	import Button from '$lib/components/button.svelte';
+	import Promotion from '$lib/components/promotion.svelte';
+	import CapturedPieces from '$lib/components/captured-pieces.svelte';
 
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
@@ -13,6 +15,28 @@
 	let legalMoves = $derived(
 		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
 	);
+
+	let capturedPieces: Piece[] = [
+		{ type: 'Pawn', color: 'Black' },
+		{ type: 'Pawn', color: 'Black' },
+		{ type: 'Knight', color: 'Black' },
+		{ type: 'Pawn', color: 'Black' },
+		{ type: 'Knight', color: 'Black' },
+		{ type: 'Rook', color: 'Black' },
+		{ type: 'Queen', color: 'Black' },
+		{ type: 'Bishop', color: 'Black' }
+	];
+
+	let capturedPiecesOpponent: Piece[] = [
+		{ type: 'Pawn', color: 'White' },
+		{ type: 'Pawn', color: 'White' },
+		{ type: 'Knight', color: 'White' },
+		{ type: 'Pawn', color: 'White' },
+		{ type: 'Knight', color: 'White' },
+		{ type: 'Rook', color: 'White' },
+		{ type: 'Queen', color: 'White' },
+		{ type: 'Bishop', color: 'White' }
+	];
 
 	function handleClickPiece(piece: Piece, row: number, col: number) {
 		if (piece.type == 'None') {
@@ -38,6 +62,10 @@
 	function isSelectedPosition(position: Position): boolean {
 		return position.to_str() == selectedPosition?.to_str();
 	}
+
+	function onSelectPiece(piece: Piece) {
+		console.log(`Selected: ${piece.type}`);
+	}
 </script>
 
 <svelte:head>
@@ -45,7 +73,7 @@
 </svelte:head>
 
 <div class="container">
-	<Notification text="YOU WIN - OPPONENT RESIGNED!" type="success" />
+	<!-- <Notification text="YOU WIN - OPPONENT RESIGNED!" type="success" /> -->
 
 	<!-- <div class="waiting-container">
 		<h3>Play Online</h3>
@@ -56,7 +84,7 @@
 	</div> -->
 
 	<div>
-		<h3>Opponent:</h3>
+		<h3>Opponent: <CapturedPieces pieces={capturedPiecesOpponent} /></h3>
 		<div class="board-container">
 			<img src={imgBoard} alt="Chess" class="board" />
 
@@ -78,16 +106,20 @@
 				{/each}
 			</div>
 		</div>
-		<h3>You:</h3>
+		<h3>You: <CapturedPieces pieces={capturedPieces} /></h3>
 	</div>
 
 	<div class="action-container">
-		<h4>Accept Draw?</h4>
+		<!-- <h4>Accept Draw?</h4> -->
 
-		<div class="action-buttons">
+		<!-- <div class="action-buttons">
 			<Button text="Yes" color="primary" />
 			<Button text="No" color="neutral" />
-		</div>
+		</div> -->
+
+		<!-- <h4>Choose Piece:</h4> -->
+
+		<!-- <Promotion color="White" {onSelectPiece} /> -->
 	</div>
 </div>
 
@@ -102,13 +134,13 @@
 	.board-container {
 		background: red;
 		position: relative;
-		height: 60vh;
-		width: 60vh;
+		height: 54vh;
+		width: 54vh;
 	}
 	.board {
 		position: absolute;
-		height: 60vh;
-		width: 60vh;
+		height: 100%;
+		width: 100%;
 		font-size: 0;
 	}
 
@@ -157,6 +189,7 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+		cursor: pointer;
 	}
 
 	.waiting-container {
