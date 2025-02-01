@@ -7,6 +7,7 @@
 	import Button from '$lib/components/button.svelte';
 	import Promotion from '$lib/components/promotion.svelte';
 	import CapturedPieces from '$lib/components/captured-pieces.svelte';
+	import { getLetterCoordinate, getNumberCoordinate } from '$lib/helpers/board-helper';
 
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
@@ -88,10 +89,24 @@
 		<div class="board-container">
 			<img src={imgBoard} alt="Chess" class="board" />
 
-			<div class="board-pieces">
+			<div class="board">
 				{#each pieces as pieces_row, row}
 					{#each pieces_row as piece, col}
+						{@const num = getNumberCoordinate(row, col)}
+						{@const letter = getLetterCoordinate(row, col)}
+
 						<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
+							{#if num != null}
+								<p class="coordinate-text coordinate-number" class:text-dark={row % 2 == 0}>
+									{num}
+								</p>
+							{/if}
+							{#if letter != null}
+								<p class="coordinate-text coordinate-letter" class:text-dark={col % 2 != 0}>
+									{letter}
+								</p>
+							{/if}
+
 							<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
 								{#if piece.type != 'None'}
 									<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
@@ -150,6 +165,11 @@
 		display: inline-block;
 		box-sizing: border-box;
 		position: relative;
+		color: var(--color-board-light);
+	}
+
+	.text-dark {
+		color: var(--color-board-dark);
 	}
 
 	.piece-img {
@@ -190,6 +210,24 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		cursor: pointer;
+	}
+
+	.coordinate-text {
+		display: inline-block;
+		position: absolute;
+		font-weight: bold;
+		font-size: 8pt;
+		margin: 0;
+	}
+
+	.coordinate-number {
+		top: 2px;
+		left: 2px;
+	}
+
+	.coordinate-letter {
+		bottom: 2px;
+		right: 2px;
 	}
 
 	.waiting-container {

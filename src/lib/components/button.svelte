@@ -16,7 +16,7 @@
 	class="btn {color}"
 	class:disabled={isDisabled}
 	onclick={() => {
-		if (!isDisabled) {
+		if (isDisabled) {
 			return;
 		}
 

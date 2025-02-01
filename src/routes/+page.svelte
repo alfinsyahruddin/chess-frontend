@@ -14,7 +14,7 @@
 	</div>
 	<div class="content">
 		<h1>Chess</h1>
-		<p>Open Source Chess Game<br />built with Rust & Svelte.</p>
+		<p>Open Source Chess Game<br />integrated with Stockfish AI</p>
 		<div class="container-buttons">
 			<Button text="Play Online" color="primary" onclick={() => (window.location.href = '/play')} />
 			<Button

@@ -10,6 +10,8 @@
 	--color-error: #d54747;
 	--color-success: #1dbe58;
 	--color-neutral: #515151;
+	--color-board-light: #E3C990;
+	--color-board-dark: #A98558;
 
 	font-family: var(--font-body);
 	color: var(--color-text);
