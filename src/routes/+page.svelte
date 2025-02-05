@@ -16,11 +16,15 @@
 		<h1>Chess</h1>
 		<p>Open Source Chess Game<br />integrated with Stockfish AI</p>
 		<div class="container-buttons">
-			<Button text="Play Online" color="primary" onclick={() => (window.location.href = '/play')} />
+			<Button
+				text="Play Online"
+				color="primary"
+				onclick={() => (window.location.href = '/play?mode=online')}
+			/>
 			<Button
 				text="Play Computer"
 				color="secondary"
-				onclick={() => (window.location.href = '/play')}
+				onclick={() => (window.location.href = '/play?mode=computer')}
 			/>
 		</div>
 	</div>

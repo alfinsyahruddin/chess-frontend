@@ -1,6 +1,7 @@
 <script lang="ts">
-	let { text, type = 'neutral' }: { text: string; type?: 'error' | 'success' | 'neutral' } =
-		$props();
+	import type { Notification } from '$lib/entities/notification';
+
+	let { text, type = 'neutral' }: Notification = $props();
 </script>
 
 <div class="notification {type}">{text}</div>

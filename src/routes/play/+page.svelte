@@ -9,7 +9,9 @@
 	import CapturedPieces from '$lib/components/captured-pieces.svelte';
 	import { getLetterCoordinate, getNumberCoordinate } from '$lib/helpers/board-helper';
 	import { PUBLIC_WS_URL } from '$env/static/public';
+	import { GameState } from '$lib/entities/game-state';
 
+	let gameState: GameState = $state(GameState.Waiting);
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
 
@@ -18,37 +20,37 @@
 		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
 	);
 
-	let capturedPieces: Piece[] = [
-		{ type: 'Pawn', color: 'Black' },
-		{ type: 'Pawn', color: 'Black' },
-		{ type: 'Knight', color: 'Black' },
-		{ type: 'Pawn', color: 'Black' },
-		{ type: 'Knight', color: 'Black' },
-		{ type: 'Rook', color: 'Black' },
-		{ type: 'Queen', color: 'Black' },
-		{ type: 'Bishop', color: 'Black' }
-	];
+	let capturedPieces: Piece[] = [];
+	let capturedPiecesOpponent: Piece[] = [];
 
-	let capturedPiecesOpponent: Piece[] = [
-		{ type: 'Pawn', color: 'White' },
-		{ type: 'Pawn', color: 'White' },
-		{ type: 'Knight', color: 'White' },
-		{ type: 'Pawn', color: 'White' },
-		{ type: 'Knight', color: 'White' },
-		{ type: 'Rook', color: 'White' },
-		{ type: 'Queen', color: 'White' },
-		{ type: 'Bishop', color: 'White' }
-	];
+	let notification = $state({ text: '' });
 
 	let ws: WebSocket;
 
-	setupWebSocket();
+	onInit();
+
+	function onInit() {
+		const params = new URLSearchParams(window.location.search);
+		let mode = params.get('mode');
+		console.log(`=== MODE: ${mode} ===`);
+
+		// setupWebSocket();
+	}
 
 	function setupWebSocket() {
 		console.log('START WS');
 
 		// Connect to the WebSocket server
 		ws = new WebSocket(PUBLIC_WS_URL);
+
+		// Handle open connection
+		ws.onopen = (event: Event) => {
+			ws.send(
+				JSON.stringify({
+					action: 'REQUEST_PLAY'
+				})
+			);
+		};
 
 		// Handle incoming messages
 		ws.onmessage = (event: MessageEvent) => {
@@ -101,69 +103,72 @@
 </svelte:head>
 
 <div class="container">
-	<!-- <Notification text="YOU WIN - OPPONENT RESIGNED!" type="success" /> -->
+	{#if notification.text.length > 0}
+		<Notification {...notification} />
+	{/if}
 
-	<!-- <div class="waiting-container">
-		<h3>Play Online</h3>
+	{#if gameState === GameState.Waiting}
+		<div class="waiting-container">
+			<h3>Play Online</h3>
 
-		<p>Waiting for opponent,<br />please wait..</p>
+			<p>Waiting for opponent,<br />please wait..</p>
 
-		<Button text="Abort" />
-	</div> -->
-
-	<div class="board-layout">
-		<h3>Opponent: <CapturedPieces pieces={capturedPiecesOpponent} /></h3>
-		<div class="board-container">
-			<img src={imgBoard} alt="Chess" class="board" />
-
-			<div class="board">
-				{#each pieces as pieces_row, row}
-					{#each pieces_row as piece, col}
-						{@const num = getNumberCoordinate(row, col)}
-						{@const letter = getLetterCoordinate(row, col)}
-
-						<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
-							{#if num != null}
-								<p class="coordinate-text coordinate-number" class:text-dark={row % 2 == 0}>
-									{num}
-								</p>
-							{/if}
-							{#if letter != null}
-								<p class="coordinate-text coordinate-letter" class:text-dark={col % 2 != 0}>
-									{letter}
-								</p>
-							{/if}
-
-							<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
-								{#if piece.type != 'None'}
-									<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
-								{/if}
-							</button>
-
-							{#if isLegalMove(new Position(row, col))}
-								<span class="dot"></span>
-							{/if}
-						</div>
-					{/each}
-				{/each}
-			</div>
+			<Button text="Abort" onclick={() => (window.location.href = '/')} />
 		</div>
-		<h3>You: <CapturedPieces pieces={capturedPieces} /></h3>
-	</div>
+	{:else if gameState === GameState.Playing}
+		<div class="board-layout">
+			<h3>Opponent: <CapturedPieces pieces={capturedPiecesOpponent} /></h3>
+			<div class="board-container">
+				<img src={imgBoard} alt="Chess" class="board" />
 
-	<div class="action-container">
-		<!-- <h4>Accept Draw?</h4> -->
+				<div class="board">
+					{#each pieces as pieces_row, row}
+						{#each pieces_row as piece, col}
+							{@const num = getNumberCoordinate(row, col)}
+							{@const letter = getLetterCoordinate(row, col)}
 
-		<!-- <div class="action-buttons">
+							<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
+								{#if num != null}
+									<p class="coordinate-text coordinate-number" class:text-dark={row % 2 == 0}>
+										{num}
+									</p>
+								{/if}
+								{#if letter != null}
+									<p class="coordinate-text coordinate-letter" class:text-dark={col % 2 != 0}>
+										{letter}
+									</p>
+								{/if}
+
+								<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
+									{#if piece.type != 'None'}
+										<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
+									{/if}
+								</button>
+
+								{#if isLegalMove(new Position(row, col))}
+									<span class="dot"></span>
+								{/if}
+							</div>
+						{/each}
+					{/each}
+				</div>
+			</div>
+			<h3>You: <CapturedPieces pieces={capturedPieces} /></h3>
+		</div>
+
+		<div class="action-container">
+			<!-- <h4>Accept Draw?</h4> -->
+
+			<!-- <div class="action-buttons">
 			<Button text="Yes" color="primary" />
 			<Button text="No" color="neutral" />
-		</div> -->
+			</div> -->
 
-		<!-- <h4>Choose Piece:</h4> -->
+			<!-- <h4>Choose Piece:</h4> -->
 
-		<!-- <Promotion color="White" {onSelectPiece} /> -->
+			<!-- <Promotion color="White" {onSelectPiece} /> -->
 
-		<Button
+			<!-- <Button
 			text="PLAY"
 			color="primary"
 			onclick={() => {
@@ -173,8 +178,9 @@
 					})
 				);
 			}}
-		/>
-	</div>
+		/> -->
+		</div>
+	{/if}
 </div>
 
 <style>
