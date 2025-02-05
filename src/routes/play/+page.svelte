@@ -26,12 +26,14 @@
 	let notification = $state({ text: '' });
 
 	let ws: WebSocket;
+	let mode = $state('online');
 
 	onInit();
 
 	function onInit() {
 		const params = new URLSearchParams(window.location.search);
-		let mode = params.get('mode');
+		let gameMode = params.get('mode');
+		mode = gameMode == 'computer' ? 'computer' : 'online';
 		console.log(`=== MODE: ${mode} ===`);
 
 		// setupWebSocket();
@@ -109,7 +111,7 @@
 
 	{#if gameState === GameState.Waiting}
 		<div class="waiting-container">
-			<h3>Play Online</h3>
+			<h3>Play {mode}</h3>
 
 			<p>Waiting for opponent,<br />please wait..</p>
 
@@ -281,6 +283,7 @@
 	.waiting-container h3 {
 		font-size: 32px;
 		margin: 0;
+		text-transform: capitalize;
 	}
 
 	.waiting-container p {
