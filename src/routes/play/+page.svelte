@@ -1,7 +1,7 @@
 <script lang="ts">
 	import imgBoard from '$lib/images/board.svg';
 	import { chunkArray } from '$lib/helpers/array-helper';
-	import { Board, Position, type Piece } from 'chess-core';
+	import { Board, Position, type Piece, type PieceColor } from 'chess-core';
 	import { getPieceImage } from '$lib/helpers/image-helper';
 	import Notification from '$lib/components/notification.svelte';
 	import Button from '$lib/components/button.svelte';
@@ -10,10 +10,17 @@
 	import { getLetterCoordinate, getNumberCoordinate } from '$lib/helpers/board-helper';
 	import { PUBLIC_WS_URL } from '$env/static/public';
 	import { GameState } from '$lib/entities/game-state';
+	import type { ServerData } from '$lib/entities/server-data';
+	import type { NotificationData } from '$lib/entities/notification';
+	import type { Server } from '@sveltejs/kit';
 
 	let gameState: GameState = $state(GameState.Waiting);
 	let board: Board = $state(new Board());
 	let selectedPosition: Position | null = $state(null);
+
+	let playerColor: PieceColor | null = $state(null);
+	let isOfferingDraw: boolean = $state(false);
+	let isOfferedDraw: boolean = $state(false);
 
 	let pieces = $derived(chunkArray(board.pieces, 8));
 	let legalMoves = $derived(
@@ -21,9 +28,9 @@
 	);
 
 	let capturedPieces: Piece[] = [];
-	let capturedPiecesOpponent: Piece[] = [];
+	let capturedPiecesByOpponent: Piece[] = [];
 
-	let notification = $state({ text: '' });
+	let notification: NotificationData | null = $state(null);
 
 	let ws: WebSocket;
 	let mode = $state('online');
@@ -36,7 +43,7 @@
 		mode = gameMode == 'computer' ? 'computer' : 'online';
 		console.log(`=== MODE: ${mode} ===`);
 
-		// setupWebSocket();
+		setupWebSocket();
 	}
 
 	function setupWebSocket() {
@@ -57,6 +64,32 @@
 		// Handle incoming messages
 		ws.onmessage = (event: MessageEvent) => {
 			console.log(event);
+
+			let data: ServerData = JSON.parse(event.data);
+
+			switch (data.action) {
+				case 'GAME_STARTED':
+					gameState = GameState.Playing;
+					playerColor = data.is_white_player ? 'White' : 'Black';
+					break;
+				case 'GAME_OVER':
+					gameState = GameState.GameOver;
+					switch (data.reason) {
+						case 'RESIGNED':
+							handleResigned(data);
+							break;
+						case 'DRAW':
+							handleDraw(data);
+							break;
+					}
+					break;
+				case 'OFFER_DRAW':
+					isOfferedDraw = true;
+					break;
+				case 'DRAW_REJECTED':
+					isOfferingDraw = false;
+					break;
+			}
 		};
 
 		// Handle errors
@@ -67,6 +100,27 @@
 		// Handle connection closure
 		ws.onclose = () => {
 			console.log('WebSocket connection closed');
+		};
+	}
+
+	function handleResigned(data: ServerData) {
+		if (data.winner === playerColor) {
+			notification = {
+				text: 'YOU WIN - OPPONENT RESIGNED!',
+				type: 'success'
+			};
+		} else {
+			notification = {
+				text: 'YOU LOSE - BY RESIGNATION!',
+				type: 'error'
+			};
+		}
+	}
+
+	function handleDraw(data: ServerData) {
+		notification = {
+			text: 'DRAW',
+			type: 'neutral'
 		};
 	}
 
@@ -105,7 +159,7 @@
 </svelte:head>
 
 <div class="container">
-	{#if notification.text.length > 0}
+	{#if notification != null}
 		<Notification {...notification} />
 	{/if}
 
@@ -117,9 +171,9 @@
 
 			<Button text="Abort" onclick={() => (window.location.href = '/')} />
 		</div>
-	{:else if gameState === GameState.Playing}
+	{:else if [GameState.Playing, GameState.GameOver].includes(gameState)}
 		<div class="board-layout">
-			<h3>Opponent: <CapturedPieces pieces={capturedPiecesOpponent} /></h3>
+			<h3>Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} /></h3>
 			<div class="board-container">
 				<img src={imgBoard} alt="Chess" class="board" />
 
@@ -159,28 +213,71 @@
 		</div>
 
 		<div class="action-container">
-			<!-- <h4>Accept Draw?</h4> -->
-
-			<!-- <div class="action-buttons">
-			<Button text="Yes" color="primary" />
-			<Button text="No" color="neutral" />
-			</div> -->
-
 			<!-- <h4>Choose Piece:</h4> -->
 
 			<!-- <Promotion color="White" {onSelectPiece} /> -->
 
-			<!-- <Button
-			text="PLAY"
-			color="primary"
-			onclick={() => {
-				ws.send(
-					JSON.stringify({
-						action: 'REQUEST_PLAY'
-					})
-				);
-			}}
-		/> -->
+			{#if gameState == GameState.Playing}
+				{#if !isOfferedDraw}
+					<div class="action-buttons">
+						<Button
+							text="RESIGN"
+							color="primary"
+							onclick={() => {
+								ws.send(
+									JSON.stringify({
+										action: 'RESIGN'
+									})
+								);
+							}}
+						/>
+
+						<Button
+							text="DRAW"
+							color="neutral"
+							isDisabled={isOfferingDraw}
+							onclick={() => {
+								isOfferingDraw = true;
+								ws.send(
+									JSON.stringify({
+										action: 'OFFER_DRAW'
+									})
+								);
+							}}
+						/>
+					</div>
+				{/if}
+
+				{#if isOfferedDraw}
+					<h4>Accept Draw?</h4>
+
+					<div class="action-buttons">
+						<Button
+							text="Yes"
+							color="primary"
+							onclick={() => {
+								ws.send(
+									JSON.stringify({
+										action: 'ACCEPT_DRAW'
+									})
+								);
+							}}
+						/>
+						<Button
+							text="No"
+							color="neutral"
+							onclick={() => {
+								isOfferedDraw = false;
+								ws.send(
+									JSON.stringify({
+										action: 'REJECT_DRAW'
+									})
+								);
+							}}
+						/>
+					</div>
+				{/if}
+			{/if}
 		</div>
 	{/if}
 </div>
