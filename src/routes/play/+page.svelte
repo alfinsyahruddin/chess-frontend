@@ -81,6 +81,9 @@
 						case 'DRAW':
 							handleDraw(data);
 							break;
+						case 'DISCONNECTED':
+							handleDisconnected(data);
+							break;
 					}
 					break;
 				case 'OFFER_DRAW':
@@ -122,6 +125,20 @@
 			text: 'DRAW',
 			type: 'neutral'
 		};
+	}
+
+	function handleDisconnected(data: ServerData) {
+		if (data.winner === playerColor) {
+			notification = {
+				text: 'YOU WIN - OPPONENT DISCONNECTED!',
+				type: 'success'
+			};
+		} else {
+			notification = {
+				text: 'YOU LOSE - BY DISCONNECTED!',
+				type: 'success'
+			};
+		}
 	}
 
 	function handleClickPiece(piece: Piece, row: number, col: number) {
