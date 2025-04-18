@@ -22,7 +22,10 @@
 	let isOfferingDraw: boolean = $state(false);
 	let isOfferedDraw: boolean = $state(false);
 
-	let pieces = $derived(getPiecesPosition(chunkArray(board.pieces, 8), playerColor));
+	let rows = $derived(getCoordinateArray());
+	let cols = $derived(getCoordinateArray());
+
+	let pieces = $derived(chunkArray(board.pieces, 8));
 	let legalMoves = $derived(
 		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
 	);
@@ -46,16 +49,10 @@
 		setupWebSocket();
 	}
 
-	function getPiecesPosition(pieces: Piece[][], playerColor: PieceColor | null): Piece[][] {
-		// shallow‑clone each row
-		const board = pieces.map((row) => [...row]);
-
-		if (playerColor === 'Black') {
-			board.reverse(); // flip ranks
-			board.forEach((row) => row.reverse()); // flip files
-		}
-
-		return board;
+	function getCoordinateArray() {
+		const base = [...Array(8).keys()];
+		const ordered = playerColor === 'White' ? base : base.reverse();
+		return ordered;
 	}
 
 	function setupWebSocket() {
@@ -83,6 +80,9 @@
 				case 'GAME_STARTED':
 					gameState = GameState.Playing;
 					playerColor = data.is_white_player ? 'White' : 'Black';
+					break;
+				case 'BOARD_CHANGED':
+					handleBoardChanged(data);
 					break;
 				case 'GAME_OVER':
 					gameState = GameState.GameOver;
@@ -116,6 +116,13 @@
 		ws.onclose = () => {
 			console.log('WebSocket connection closed');
 		};
+	}
+
+	function handleBoardChanged(data: ServerData) {
+		let newBoard = Board.parse_fen(data.fen ?? '');
+		if (newBoard != null) {
+			board = newBoard;
+		}
 	}
 
 	function handleResigned(data: ServerData) {
@@ -154,11 +161,36 @@
 	}
 
 	function handleClickPiece(piece: Piece, row: number, col: number) {
-		if (piece.type == 'None') {
-			return;
-		}
+		let newPosition = new Position(row, col);
 
-		selectedPosition = new Position(row, col);
+		console.log(`Clicked: ${piece.type} (${row}, ${col}) - ${newPosition.to_str()}`);
+
+		let isLegal = isLegalMove(newPosition);
+
+		console.log(`isLegal: ${isLegal}, selected: ${selectedPosition?.to_str()}`);
+
+		if (selectedPosition != null && selectedPosition != undefined && isLegal) {
+			const payload = JSON.stringify({
+				action: 'MOVE_PIECE',
+				move_piece: {
+					selected_piece: selectedPosition.to_str(),
+					target_position: newPosition.to_str()
+				}
+			});
+			ws.send(payload);
+			selectedPosition = null;
+			console.log('MOVE: ' + payload);
+		} else {
+			if (piece.type == 'None' || piece.color != playerColor) {
+				return;
+			}
+
+			if (selectedPosition?.to_str() == newPosition.to_str()) {
+				selectedPosition = null;
+			} else {
+				selectedPosition = newPosition;
+			}
+		}
 	}
 
 	function isLegalMove(position: Position): boolean {
@@ -208,19 +240,21 @@
 				<img src={imgBoard} alt="Chess" class="board" />
 
 				<div class="board">
-					{#each pieces as pieces_row, row}
-						{#each pieces_row as piece, col}
+					{#each rows as row}
+						{#each cols as col}
 							{@const num = getNumberCoordinate(row, col, playerColor)}
 							{@const letter = getLetterCoordinate(row, col, playerColor)}
+							{@const piece = pieces[row][col]}
+							{@const position = new Position(row, col)}
 
-							<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
+							<div class="piece" class:piece-selected={isSelectedPosition(position)}>
 								{#if num != null}
 									<p
 										class="coordinate-text coordinate-number"
 										class:text-dark={row % 2 == 0 ? col % 2 == 0 : col % 2 != 0}
 									>
-										<!-- {letter + num} -->
-										{`${row},${col}`}
+										{letter + num}
+										<!-- {`${row},${col}`} -->
 									</p>
 								{/if}
 								<!-- {#if letter != null}
@@ -233,11 +267,11 @@
 									{#if piece.type != 'None'}
 										<img src={getPieceImage(piece)} alt="Piece" class="piece-img" />
 									{/if}
-								</button>
 
-								{#if isLegalMove(new Position(row, col))}
-									<span class="dot"></span>
-								{/if}
+									{#if isLegalMove(position)}
+										<span class="dot"></span>
+									{/if}
+								</button>
 							</div>
 						{/each}
 					{/each}

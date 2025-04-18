@@ -7,8 +7,7 @@ export function getNumberCoordinate(
 ): string | null {
 	// if (col != 0) return null;
 
-	const number = playerColor == 'White' ? 8 - row : row + 1;
-	return `${number}`;
+	return `${8 - row}`;
 }
 
 export function getLetterCoordinate(
@@ -18,6 +17,5 @@ export function getLetterCoordinate(
 ): string | null {
 	// if (7 - row != 0) return null;
 
-	const coll = playerColor == 'White' ? col : 7 - col;
-	return String.fromCharCode(97 + coll);
+	return String.fromCharCode(97 + col);
 }
