@@ -1,11 +1,23 @@
-export function getNumberCoordinate(row: number, col: number): string | null {
-	if (col != 0) return null;
+import type { PieceColor } from 'chess-core';
 
-	return `${8 - row}`;
+export function getNumberCoordinate(
+	row: number,
+	col: number,
+	playerColor: PieceColor | null
+): string | null {
+	// if (col != 0) return null;
+
+	const number = playerColor == 'White' ? 8 - row : row + 1;
+	return `${number}`;
 }
 
-export function getLetterCoordinate(row: number, col: number): string | null {
-	if (7 - row != 0) return null;
+export function getLetterCoordinate(
+	row: number,
+	col: number,
+	playerColor: PieceColor | null
+): string | null {
+	// if (7 - row != 0) return null;
 
-	return String.fromCharCode(97 + col);
+	const coll = playerColor == 'White' ? col : 7 - col;
+	return String.fromCharCode(97 + coll);
 }

@@ -22,7 +22,7 @@
 	let isOfferingDraw: boolean = $state(false);
 	let isOfferedDraw: boolean = $state(false);
 
-	let pieces = $derived(chunkArray(board.pieces, 8));
+	let pieces = $derived(getPiecesPosition(chunkArray(board.pieces, 8), playerColor));
 	let legalMoves = $derived(
 		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
 	);
@@ -44,6 +44,18 @@
 		console.log(`=== MODE: ${mode} ===`);
 
 		setupWebSocket();
+	}
+
+	function getPiecesPosition(pieces: Piece[][], playerColor: PieceColor | null): Piece[][] {
+		// shallow‑clone each row
+		const board = pieces.map((row) => [...row]);
+
+		if (playerColor === 'Black') {
+			board.reverse(); // flip ranks
+			board.forEach((row) => row.reverse()); // flip files
+		}
+
+		return board;
 	}
 
 	function setupWebSocket() {
@@ -190,6 +202,7 @@
 		</div>
 	{:else if [GameState.Playing, GameState.GameOver].includes(gameState)}
 		<div class="board-layout">
+			<h1>{playerColor}</h1>
 			<h3>Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} /></h3>
 			<div class="board-container">
 				<img src={imgBoard} alt="Chess" class="board" />
@@ -197,20 +210,24 @@
 				<div class="board">
 					{#each pieces as pieces_row, row}
 						{#each pieces_row as piece, col}
-							{@const num = getNumberCoordinate(row, col)}
-							{@const letter = getLetterCoordinate(row, col)}
+							{@const num = getNumberCoordinate(row, col, playerColor)}
+							{@const letter = getLetterCoordinate(row, col, playerColor)}
 
 							<div class="piece" class:piece-selected={isSelectedPosition(new Position(row, col))}>
 								{#if num != null}
-									<p class="coordinate-text coordinate-number" class:text-dark={row % 2 == 0}>
-										{num}
+									<p
+										class="coordinate-text coordinate-number"
+										class:text-dark={row % 2 == 0 ? col % 2 == 0 : col % 2 != 0}
+									>
+										<!-- {letter + num} -->
+										{`${row},${col}`}
 									</p>
 								{/if}
-								{#if letter != null}
+								<!-- {#if letter != null}
 									<p class="coordinate-text coordinate-letter" class:text-dark={col % 2 != 0}>
 										{letter}
 									</p>
-								{/if}
+								{/if} -->
 
 								<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
 									{#if piece.type != 'None'}
