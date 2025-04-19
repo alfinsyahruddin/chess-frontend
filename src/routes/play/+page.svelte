@@ -170,6 +170,11 @@
 		console.log(`isLegal: ${isLegal}, selected: ${selectedPosition?.to_str()}`);
 
 		if (selectedPosition != null && selectedPosition != undefined && isLegal) {
+			// Move Piece
+			if (board.turn != playerColor) {
+				return;
+			}
+
 			const payload = JSON.stringify({
 				action: 'MOVE_PIECE',
 				move_piece: {
@@ -181,6 +186,7 @@
 			selectedPosition = null;
 			console.log('MOVE: ' + payload);
 		} else {
+			// Select Piece
 			if (piece.type == 'None' || piece.color != playerColor) {
 				return;
 			}
@@ -234,7 +240,7 @@
 		</div>
 	{:else if [GameState.Playing, GameState.GameOver].includes(gameState)}
 		<div class="board-layout">
-			<h1>{playerColor}</h1>
+			<h1>{playerColor} (Turn: {board.turn})</h1>
 			<h3>Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} /></h3>
 			<div class="board-container">
 				<img src={imgBoard} alt="Chess" class="board" />
