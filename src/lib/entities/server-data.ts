@@ -3,6 +3,7 @@ import type { PieceColor } from 'chess-core';
 export type ServerAction =
 	| 'GAME_STARTED'
 	| 'BOARD_CHANGED'
+	| 'PROMOTION'
 	| 'GAME_OVER'
 	| 'OFFER_DRAW'
 	| 'DRAW_REJECTED';

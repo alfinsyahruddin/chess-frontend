@@ -43,5 +43,10 @@
 		cursor: pointer;
 		outline: inherit;
 		display: inline-block;
+		border-radius: 12px;
+	}
+
+	.piece-button:hover {
+		background-color: rgba(255, 255, 255, 0.1);
 	}
 </style>

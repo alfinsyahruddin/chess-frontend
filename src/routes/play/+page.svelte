@@ -19,8 +19,10 @@
 	let selectedPosition: Position | null = $state(null);
 
 	let playerColor: PieceColor | null = $state(null);
+
 	let isOfferingDraw: boolean = $state(false);
 	let isOfferedDraw: boolean = $state(false);
+	let isPromotion: boolean = $state(false);
 
 	let rows = $derived(getCoordinateArray());
 	let cols = $derived(getCoordinateArray());
@@ -83,6 +85,9 @@
 					break;
 				case 'BOARD_CHANGED':
 					handleBoardChanged(data);
+					break;
+				case 'PROMOTION':
+					isPromotion = true;
 					break;
 				case 'GAME_OVER':
 					gameState = GameState.GameOver;
@@ -216,8 +221,17 @@
 		return position.to_str() == selectedPosition?.to_str();
 	}
 
-	function onSelectPiece(piece: Piece) {
-		console.log(`Selected: ${piece.type}`);
+	function onSelectPromotion(piece: Piece) {
+		console.log(`Promotion Piece: ${piece.type}`);
+
+		ws.send(
+			JSON.stringify({
+				action: 'PROMOTE_PIECE',
+				promotion_piece: Board.get_fen_from_piece(piece)
+			})
+		);
+
+		isPromotion = false;
 	}
 </script>
 
@@ -287,41 +301,7 @@
 		</div>
 
 		<div class="action-container">
-			<!-- <h4>Choose Piece:</h4> -->
-
-			<!-- <Promotion color="White" {onSelectPiece} /> -->
-
 			{#if gameState == GameState.Playing}
-				{#if !isOfferedDraw}
-					<div class="action-buttons">
-						<Button
-							text="RESIGN"
-							color="primary"
-							onclick={() => {
-								ws.send(
-									JSON.stringify({
-										action: 'RESIGN'
-									})
-								);
-							}}
-						/>
-
-						<Button
-							text="DRAW"
-							color="neutral"
-							isDisabled={isOfferingDraw}
-							onclick={() => {
-								isOfferingDraw = true;
-								ws.send(
-									JSON.stringify({
-										action: 'OFFER_DRAW'
-									})
-								);
-							}}
-						/>
-					</div>
-				{/if}
-
 				{#if isOfferedDraw}
 					<h4>Accept Draw?</h4>
 
@@ -345,6 +325,38 @@
 								ws.send(
 									JSON.stringify({
 										action: 'REJECT_DRAW'
+									})
+								);
+							}}
+						/>
+					</div>
+				{:else if isPromotion}
+					<h4>Choose Piece:</h4>
+
+					<Promotion color={playerColor ?? 'White'} onSelectPiece={onSelectPromotion} />
+				{:else}
+					<div class="action-buttons">
+						<Button
+							text="RESIGN"
+							color="primary"
+							onclick={() => {
+								ws.send(
+									JSON.stringify({
+										action: 'RESIGN'
+									})
+								);
+							}}
+						/>
+
+						<Button
+							text="DRAW"
+							color="neutral"
+							isDisabled={isOfferingDraw}
+							onclick={() => {
+								isOfferingDraw = true;
+								ws.send(
+									JSON.stringify({
+										action: 'OFFER_DRAW'
 									})
 								);
 							}}
