@@ -101,6 +101,9 @@
 						case 'DISCONNECTED':
 							handleDisconnected(data);
 							break;
+						case 'CHECKMATE':
+							handleCheckmate(data);
+							break;
 					}
 					break;
 				case 'OFFER_DRAW':
@@ -127,6 +130,20 @@
 		let newBoard = Board.parse_fen(data.fen ?? '');
 		if (newBoard != null) {
 			board = newBoard;
+		}
+	}
+
+	function handleCheckmate(data: ServerData) {
+		if (data.winner === playerColor) {
+			notification = {
+				text: 'YOU WIN - CHECKMATE!',
+				type: 'success'
+			};
+		} else {
+			notification = {
+				text: 'YOU LOSE - BY CHECKMATE!',
+				type: 'error'
+			};
 		}
 	}
 
