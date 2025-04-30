@@ -32,8 +32,8 @@
 		selectedPosition != null ? board.get_legal_moves(selectedPosition) : []
 	);
 
-	let capturedPieces: Piece[] = [];
-	let capturedPiecesByOpponent: Piece[] = [];
+	let capturedPieces: Piece[] = $state([]);
+	let capturedPiecesByOpponent: Piece[] = $state([]);
 
 	let notification: NotificationData | null = $state(null);
 
@@ -130,6 +130,21 @@
 		let newBoard = Board.parse_fen(data.fen ?? '');
 		if (newBoard != null) {
 			board = newBoard;
+		}
+
+		// Handle captured white pieces (compare with playerColor)
+		if (data.captured_white_pieces != null) {
+			if (playerColor === 'White') {
+				capturedPieces = data.captured_black_pieces.map((piece) => Board.piece_parse_fen(piece));
+				capturedPiecesByOpponent = data.captured_white_pieces.map((piece) =>
+					Board.piece_parse_fen(piece)
+				);
+			} else {
+				capturedPieces = data.captured_white_pieces.map((piece) => Board.piece_parse_fen(piece));
+				capturedPiecesByOpponent = data.captured_white_pieces.map((piece) =>
+					Board.piece_parse_fen(piece)
+				);
+			}
 		}
 	}
 

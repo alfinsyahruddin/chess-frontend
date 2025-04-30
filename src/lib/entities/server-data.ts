@@ -14,4 +14,6 @@ export interface ServerData {
 	winner?: PieceColor;
 	reason?: GameOverReason;
 	fen?: string;
+	captured_white_pieces: string[];
+	captured_black_pieces: string[];
 }
