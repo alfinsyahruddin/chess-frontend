@@ -5,7 +5,7 @@
 
 	let { pieces }: { pieces: Piece[] } = $props();
 
-	let sortedPieces: Piece[][] = getSortedPieces(pieces);
+	let sortedPieces: Piece[][] = $derived(getSortedPieces(pieces));
 </script>
 
 <div class="container">

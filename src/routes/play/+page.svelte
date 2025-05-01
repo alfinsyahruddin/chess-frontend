@@ -133,18 +133,18 @@
 		}
 
 		// Handle captured white pieces (compare with playerColor)
-		if (data.captured_white_pieces != null) {
-			if (playerColor === 'White') {
-				capturedPieces = data.captured_black_pieces.map((piece) => Board.piece_parse_fen(piece));
-				capturedPiecesByOpponent = data.captured_white_pieces.map((piece) =>
-					Board.piece_parse_fen(piece)
-				);
-			} else {
-				capturedPieces = data.captured_white_pieces.map((piece) => Board.piece_parse_fen(piece));
-				capturedPiecesByOpponent = data.captured_white_pieces.map((piece) =>
-					Board.piece_parse_fen(piece)
-				);
-			}
+		if (playerColor === 'White') {
+			capturedPieces = data.captured_black_pieces.map((piece) => Board.piece_parse_fen(piece));
+			capturedPiecesByOpponent = data.captured_white_pieces.map((piece) =>
+				Board.piece_parse_fen(piece)
+			);
+			console.log({ capturedPieces, capturedPiecesByOpponent });
+		} else {
+			capturedPieces = data.captured_white_pieces.map((piece) => Board.piece_parse_fen(piece));
+			capturedPiecesByOpponent = data.captured_black_pieces.map((piece) =>
+				Board.piece_parse_fen(piece)
+			);
+			console.log({ capturedPieces, capturedPiecesByOpponent });
 		}
 	}
 
@@ -287,7 +287,9 @@
 	{:else if [GameState.Playing, GameState.GameOver].includes(gameState)}
 		<div class="board-layout">
 			<h1>{playerColor} (Turn: {board.turn})</h1>
-			<h3>Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} /></h3>
+			<h3 class="captured-piece-container">
+				Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} />
+			</h3>
 			<div class="board-container">
 				<img src={imgBoard} alt="Chess" class="board" />
 
@@ -329,7 +331,7 @@
 					{/each}
 				</div>
 			</div>
-			<h3>You: <CapturedPieces pieces={capturedPieces} /></h3>
+			<h3 class="captured-piece-container">You: <CapturedPieces pieces={capturedPieces} /></h3>
 		</div>
 
 		<div class="action-container">
@@ -522,6 +524,10 @@
 	.action-buttons {
 		display: flex;
 		gap: 12px;
+	}
+
+	.captured-piece-container {
+		height: 24px;
 	}
 
 	/* Mobile */
