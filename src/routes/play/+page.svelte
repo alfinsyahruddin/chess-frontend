@@ -296,8 +296,8 @@
 				<div class="board">
 					{#each rows as row}
 						{#each cols as col}
-							{@const num = getNumberCoordinate(row, col, playerColor)}
-							{@const letter = getLetterCoordinate(row, col, playerColor)}
+							{@const num = getNumberCoordinate(row, col, playerColor!)}
+							{@const letter = getLetterCoordinate(row, col, playerColor!)}
 							{@const piece = pieces[row][col]}
 							{@const position = new Position(row, col)}
 
@@ -305,17 +305,19 @@
 								{#if num != null}
 									<p
 										class="coordinate-text coordinate-number"
-										class:text-dark={row % 2 == 0 ? col % 2 == 0 : col % 2 != 0}
+										class:text-dark={playerColor == 'White' ? row % 2 == 0 : row % 2 != 0}
 									>
-										{letter + num}
-										<!-- {`${row},${col}`} -->
+										{num}
 									</p>
 								{/if}
-								<!-- {#if letter != null}
-									<p class="coordinate-text coordinate-letter" class:text-dark={col % 2 != 0}>
+								{#if letter != null}
+									<p
+										class="coordinate-text coordinate-letter"
+										class:text-dark={playerColor == 'White' ? col % 2 != 0 : col % 2 == 0}
+									>
 										{letter}
 									</p>
-								{/if} -->
+								{/if}
 
 								<button class="piece-button" onclick={() => handleClickPiece(piece, row, col)}>
 									{#if piece.type != 'None'}

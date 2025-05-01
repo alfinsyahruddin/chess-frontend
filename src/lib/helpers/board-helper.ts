@@ -1,21 +1,27 @@
 import type { PieceColor } from 'chess-core';
 
-export function getNumberCoordinate(
+const targetCols: Record<PieceColor, number> = {
+	White: 0,
+	Black: 7
+};
+
+const targetRows: Record<PieceColor, number> = {
+	White: 7,
+	Black: 0
+};
+
+export const getNumberCoordinate = (
 	row: number,
 	col: number,
-	playerColor: PieceColor | null
-): string | null {
-	// if (col != 0) return null;
+	playerColor: PieceColor
+): string | null => {
+	return col === targetCols[playerColor] ? String(8 - row) : null;
+};
 
-	return `${8 - row}`;
-}
-
-export function getLetterCoordinate(
+export const getLetterCoordinate = (
 	row: number,
 	col: number,
-	playerColor: PieceColor | null
-): string | null {
-	// if (7 - row != 0) return null;
-
-	return String.fromCharCode(97 + col);
-}
+	playerColor: PieceColor
+): string | null => {
+	return row === targetRows[playerColor] ? String.fromCharCode(97 + col) : null;
+};
