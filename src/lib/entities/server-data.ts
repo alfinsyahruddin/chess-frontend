@@ -13,6 +13,7 @@ export type GameOverReason =
 	| 'DRAW'
 	| 'DRAW_FIFTY_MOVES'
 	| 'DRAW_INSUFFICIENT_MATERIAL'
+	| 'DRAW_STALEMATE'
 	| 'CHECKMATE';
 export interface ServerData {
 	action: ServerAction;

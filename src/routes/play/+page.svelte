@@ -103,6 +103,9 @@
 						case 'DRAW_INSUFFICIENT_MATERIAL':
 							handleDrawInsufficientMaterial(data);
 							break;
+						case 'DRAW_STALEMATE':
+							handleDrawStalemate(data);
+							break;
 						case 'DISCONNECTED':
 							handleDisconnected(data);
 							break;
@@ -191,6 +194,13 @@
 	function handleDrawFiftyMoves(data: ServerData) {
 		notification = {
 			text: 'GAME DRAWN BY THE 50-MOVE RULE',
+			type: 'neutral'
+		};
+	}
+
+	function handleDrawStalemate(data: ServerData) {
+		notification = {
+			text: 'GAME DRAWN BY STALEMATE',
 			type: 'neutral'
 		};
 	}
