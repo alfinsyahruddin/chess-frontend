@@ -14,6 +14,7 @@ export type GameOverReason =
 	| 'DRAW_FIFTY_MOVES'
 	| 'DRAW_INSUFFICIENT_MATERIAL'
 	| 'DRAW_STALEMATE'
+	| 'DRAW_REPETITION'
 	| 'CHECKMATE';
 export interface ServerData {
 	action: ServerAction;
