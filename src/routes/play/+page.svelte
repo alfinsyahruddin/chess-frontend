@@ -100,6 +100,9 @@
 						case 'DRAW_FIFTY_MOVES':
 							handleDrawFiftyMoves(data);
 							break;
+						case 'DRAW_INSUFFICIENT_MATERIAL':
+							handleDrawInsufficientMaterial(data);
+							break;
 						case 'DISCONNECTED':
 							handleDisconnected(data);
 							break;
@@ -188,6 +191,13 @@
 	function handleDrawFiftyMoves(data: ServerData) {
 		notification = {
 			text: 'GAME DRAWN BY THE 50-MOVE RULE',
+			type: 'neutral'
+		};
+	}
+
+	function handleDrawInsufficientMaterial(data: ServerData) {
+		notification = {
+			text: 'GAME DRAWN BY INSUFFICIENT MATERIAL',
 			type: 'neutral'
 		};
 	}

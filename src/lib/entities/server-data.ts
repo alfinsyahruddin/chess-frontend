@@ -7,7 +7,13 @@ export type ServerAction =
 	| 'GAME_OVER'
 	| 'OFFER_DRAW'
 	| 'DRAW_REJECTED';
-export type GameOverReason = 'DISCONNECTED' | 'RESIGNED' | 'DRAW' | 'DRAW_FIFTY_MOVES' | 'CHECKMATE';
+export type GameOverReason =
+	| 'DISCONNECTED'
+	| 'RESIGNED'
+	| 'DRAW'
+	| 'DRAW_FIFTY_MOVES'
+	| 'DRAW_INSUFFICIENT_MATERIAL'
+	| 'CHECKMATE';
 export interface ServerData {
 	action: ServerAction;
 	is_white_player?: boolean;
