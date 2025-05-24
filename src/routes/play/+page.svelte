@@ -12,7 +12,6 @@
 	import { GameState } from '$lib/entities/game-state';
 	import type { ServerData } from '$lib/entities/server-data';
 	import type { NotificationData } from '$lib/entities/notification';
-	import type { Server } from '@sveltejs/kit';
 
 	let gameState: GameState = $state(GameState.Waiting);
 	let board: Board = $state(new Board());
@@ -97,6 +96,9 @@
 							break;
 						case 'DRAW':
 							handleDraw(data);
+							break;
+						case 'DRAW_FIFTY_MOVES':
+							handleDrawFiftyMoves(data);
 							break;
 						case 'DISCONNECTED':
 							handleDisconnected(data);
@@ -183,6 +185,13 @@
 		};
 	}
 
+	function handleDrawFiftyMoves(data: ServerData) {
+		notification = {
+			text: 'GAME DRAWN BY THE 50-MOVE RULE',
+			type: 'neutral'
+		};
+	}
+
 	function handleDisconnected(data: ServerData) {
 		if (data.winner === playerColor) {
 			notification = {
@@ -192,7 +201,7 @@
 		} else {
 			notification = {
 				text: 'YOU LOSE - BY DISCONNECTED!',
-				type: 'success'
+				type: 'error'
 			};
 		}
 	}
