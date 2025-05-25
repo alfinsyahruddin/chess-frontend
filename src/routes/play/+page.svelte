@@ -66,7 +66,8 @@
 		ws.onopen = (event: Event) => {
 			ws.send(
 				JSON.stringify({
-					action: 'REQUEST_PLAY'
+					action: 'REQUEST_PLAY',
+					mode
 				})
 			);
 		};
