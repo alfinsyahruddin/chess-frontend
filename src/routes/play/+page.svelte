@@ -326,9 +326,10 @@
 		</div>
 	{:else if [GameState.Playing, GameState.GameOver].includes(gameState)}
 		<div class="board-layout">
-			<h1>{playerColor} (Turn: {board.turn})</h1>
-			<h3 class="captured-piece-container">
-				Opponent: <CapturedPieces pieces={capturedPiecesByOpponent} />
+			<h3 class="captured-piece-container" class:player-active={playerColor != board.turn}>
+				{mode == 'computer' ? 'Computer' : 'Opponent'}: <CapturedPieces
+					pieces={capturedPiecesByOpponent}
+				/>
 			</h3>
 			<div class="board-container">
 				<img src={imgBoard} alt="Chess" class="board" />
@@ -373,7 +374,9 @@
 					{/each}
 				</div>
 			</div>
-			<h3 class="captured-piece-container">You: <CapturedPieces pieces={capturedPieces} /></h3>
+			<h3 class="captured-piece-container" class:player-active={playerColor == board.turn}>
+				You: <CapturedPieces pieces={capturedPieces} />
+			</h3>
 		</div>
 
 		<div class="action-container">
@@ -423,20 +426,21 @@
 								);
 							}}
 						/>
-
-						<Button
-							text="DRAW"
-							color="neutral"
-							isDisabled={isOfferingDraw}
-							onclick={() => {
-								isOfferingDraw = true;
-								ws.send(
-									JSON.stringify({
-										action: 'OFFER_DRAW'
-									})
-								);
-							}}
-						/>
+						{#if mode == 'online'}
+							<Button
+								text="DRAW"
+								color="neutral"
+								isDisabled={isOfferingDraw}
+								onclick={() => {
+									isOfferingDraw = true;
+									ws.send(
+										JSON.stringify({
+											action: 'OFFER_DRAW'
+										})
+									);
+								}}
+							/>
+						{/if}
 					</div>
 				{/if}
 			{/if}
@@ -475,6 +479,10 @@
 
 	.text-dark {
 		color: var(--color-board-dark);
+	}
+
+	.player-active {
+		text-decoration: underline;
 	}
 
 	.piece-img {
