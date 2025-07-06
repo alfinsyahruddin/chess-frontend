@@ -60,7 +60,7 @@
 		console.log('START WS');
 
 		// Connect to the WebSocket server
-		ws = new WebSocket(PUBLIC_WS_URL);
+		ws = new WebSocket(PUBLIC_WS_URL + "/play");
 
 		// Handle open connection
 		ws.onopen = (event: Event) => {
